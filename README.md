@@ -7,7 +7,7 @@ LFW: put lfw.tgz from https://www.kaggle.com/datasets/ashfaqsyed/labelled-faces-
 
 Age-DB 30: nothing to do -- script will load it
 
-CFP-FP: put cfp-dataset.zip to data folder
+CFP-FP: put cfp-dataset.zip from http://www.cfpw.io/ to data folder
 
 ------
 

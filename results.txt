@@ -1,0 +1,1 @@
+lfw_retina_arcface: acc = 0.9982, std = 0.0016, model = arcface, flip = False

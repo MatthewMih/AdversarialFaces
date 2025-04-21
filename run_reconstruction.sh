@@ -2,15 +2,15 @@
 
 set -e
 
-NUM_THREADS=1  # сколько потоков на каждый сетап (и сколько GPU)
+NUM_THREADS=4  # сколько потоков на каждый сетап (и сколько GPU)
 PY_SCRIPT=algorithms/reconstruct_faces.py
 
 declare -a TASKS=(
-  "lfw retinaface arcface"
+  # "lfw retinaface arcface"
   "lfw mtcnn facenet"
-  "agedb_30 retinaface arcface"
+  # "agedb_30 retinaface arcface"
   "agedb_30 mtcnn facenet"
-  "cfp_fp retinaface arcface"
+  # "cfp_fp retinaface arcface"
   "cfp_fp mtcnn facenet"
 )
 
@@ -33,7 +33,7 @@ for TASK in "${TASKS[@]}"; do
   done
 
   wait
-  echo "✅ Finished: $dataset / $aligner / $model"
+  echo "Finished: $dataset / $aligner / $model"
 done
 
 echo "All reconstructions completed."

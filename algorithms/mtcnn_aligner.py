@@ -4,7 +4,7 @@ from PIL import Image
 from facenet_pytorch import MTCNN
 
 # Инициализируем при первом импорте
-mtcnn = MTCNN(image_size=160, margin=0, device='cuda' if torch.cuda.is_available() else 'cpu')
+mtcnn = MTCNN(image_size=160, margin=0, selection_method='center_weighted_size', device='cuda' if torch.cuda.is_available() else 'cpu')
 
 def get_aligned_face(path):
     """

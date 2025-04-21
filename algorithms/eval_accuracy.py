@@ -28,20 +28,20 @@ arcface_model.load_state_dict(torch.load(f"{ROOT}/models/ms1mv3_arcface_r100_fp1
 
 def arcface_embed(v, flip=False):
     x = 2 * v.reshape(-1, 3, 112, 112).to(device) - 1
-    emb = arcface_model(x[:, [2,1,0], :, :])
+    emb = arcface_model(x) #[:, [2,1,0], :, :])
     if flip:
-        emb_f = arcface_model(torch.flip(x, [3]))
-        emb = emb + emb_f
+        emb_f = arcface_model(torch.flip(x, [3])) #[:, [2,1,0], :, :])
+        emb = torch.cat([emb, emb_f], dim=1)
     return emb
 
 
 facenet_model = InceptionResnetV1(pretrained='vggface2').to(device).eval()
 def facenet_embed(v, flip=False):
     x = 2 * v.reshape(-1, 3, 160, 160).to(device) - 1
-    emb = facenet_model(x[:, [2,1,0], :, :])
+    emb = facenet_model(x)#[:, [2,1,0], :, :])
     if flip:
-        emb_f = facenet_model(torch.flip(x, [3]))
-        emb = emb + emb_f
+        emb_f = facenet_model(torch.flip(x, [3]))#[:, [2,1,0], :, :])
+        emb = torch.cat([emb, emb_f], dim=1)
     return emb
 
 
@@ -57,17 +57,34 @@ def find_best_threshold(scores, labels):
             best_thresh = t
     return best_thresh, best_acc
 
-def cross_val_accuracy(folds, emb_cache, sim_fn):
+def cross_val_accuracy(folds, emb_cache, sim_fn, extract_average_emb):
     accs = []
     for i, fold in enumerate(folds):
         train = [s for j, f in enumerate(folds) if j != i for s in f]
         test = folds[i]
 
-        train_scores = [sim_fn(emb_cache[a], emb_cache[b]).item() for a, b, _ in train]
+        if extract_average_emb:
+            train_keys = set()
+            for a, b, _ in train:
+                train_keys.add(a)
+                train_keys.add(b)
+            avg_emb = torch.stack([emb_cache[k] for k in train_keys]).mean(dim=0)
+        else:
+            avg_emb = None
+
+        def sim_with_avg(a, b):
+            ea = emb_cache[a]
+            eb = emb_cache[b]
+            if avg_emb is not None:
+                ea = ea - avg_emb
+                eb = eb - avg_emb
+            return sim_fn(ea, eb)
+
+        train_scores = [sim_with_avg(a, b).item() for a, b, _ in train]
         train_labels = [l for _, _, l in train]
         best_thresh, _ = find_best_threshold(np.array(train_scores), np.array(train_labels))
 
-        test_scores = [sim_fn(emb_cache[a], emb_cache[b]).item() for a, b, _ in test]
+        test_scores = [sim_with_avg(a, b).item() for a, b, _ in test]
         test_labels = [l for _, _, l in test]
         preds = (np.array(test_scores) >= best_thresh).astype(int)
         acc = np.mean(preds == test_labels)
@@ -75,6 +92,8 @@ def cross_val_accuracy(folds, emb_cache, sim_fn):
         print(f"  Fold {i+1}: acc = {acc:.4f} (thresh = {best_thresh:.4f})")
 
     return np.mean(accs), np.std(accs)
+
+
 
 def build_embedding_cache(paths, embed_fn, size, flip):
     cache = {}
@@ -85,7 +104,7 @@ def build_embedding_cache(paths, embed_fn, size, flip):
         cache[path] = emb
     return cache
 
-def main(json_path, model_type, exp_name, flip=False):
+def main(json_path, model_type, exp_name, flip=False, extract_average_emb=False):
     with open(json_path) as f:
         data = json.load(f)
 
@@ -116,11 +135,11 @@ def main(json_path, model_type, exp_name, flip=False):
         raise ValueError("Unknown model type")
 
     emb_cache = build_embedding_cache(sorted(all_paths), embed_fn, input_size, flip)
-    acc, std = cross_val_accuracy(folds, emb_cache, torch.nn.functional.cosine_similarity)
+    acc, std = cross_val_accuracy(folds, emb_cache, torch.nn.functional.cosine_similarity, extract_average_emb)
 
     log_path = os.path.join(ROOT, "runs", "results.txt")
     with open(log_path, "a") as f:
-        f.write(f"{exp_name}: acc = {acc:.4f}, std = {std:.4f}, model = {model_type}, flip = {flip}\n")
+        f.write(f"{exp_name}: acc = {acc:.4f}, std = {std:.4f}, model = {model_type}, flip = {flip}, extract_average_emb={extract_average_emb}\n")
 
     print(f"Accuracy: {acc:.4f} ± {std:.4f} (logged to {log_path})")
 
@@ -133,4 +152,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(f'Starting eval: {args.json}, {args.model} -- {args.exp}')
-    main(args.json, args.model, args.exp, flip=args.flip)
+    main(args.json, args.model, args.exp, flip=args.flip, extract_average_emb=True)

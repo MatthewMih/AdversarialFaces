@@ -1,17 +1,25 @@
-### How to use
+### 🔧 How to Use
 
-Datasets:
+#### 📁 Datasets
 
-LFW: put lfw.tgz from https://www.kaggle.com/datasets/ashfaqsyed/labelled-faces-in-the-wild to data folder
+- **LFW**  
+  Download [`lfw.tgz`](https://www.kaggle.com/datasets/ashfaqsyed/labelled-faces-in-the-wild) and place it into the `data/` directory.
 
+- **AgeDB-30**  
+  No manual setup required — the script will automatically download and extract it.
 
-Age-DB 30: nothing to do -- script will load it
+- **CFP-FP**  
+  Download [`cfp-dataset.zip`](http://www.cfpw.io/) and place it into the `data/` directory.
 
-CFP-FP: put cfp-dataset.zip from http://www.cfpw.io/ to data folder
+---
 
-------
+#### 🧠 Models
 
-Models:
-Put ms1mv3_arcface_r100_fp16_backbone.pth to "models" folder
+- **ArcFace Backbone**  
+  Download `ms1mv3_arcface_r100_fp16_backbone.pth` and place it into the `models/` directory.
 
-Dowload FFHQ [eigenfaces](https://drive.google.com/file/d/1h7F0_iZl7R9Uh5MnKDqvfE3oF8Loh5Rg/view?usp=sharing) and [average face](https://drive.google.com/file/d/1uv3ZxsVWeCOObjYh86to_CqOVbiwjlef/view?usp=sharing). Put then to the models folder
+- **Eigenfaces & Average Face (for reconstruction)**  
+  Download the following files and place them into the `models/` directory:
+  
+  - [`eigenvectors_denormalized_Square_ffhq.pt`](https://drive.google.com/file/d/1h7F0_iZl7R9Uh5MnKDqvfE3oF8Loh5Rg/view?usp=sharing)
+  - [`mtcnn_crops_ffhq_average_vector_square.pt`](https://drive.google.com/file/d/1uv3ZxsVWeCOObjYh86to_CqOVbiwjlef/view?usp=sharing)

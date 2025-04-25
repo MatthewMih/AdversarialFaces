@@ -56,3 +56,20 @@
 ```
 runs/results.txt
 ```
+
+
+### ⚙️ Optional: Generate Your Own PCA Basis
+
+If you prefer to generate your own PCA eigenfaces instead of using the precomputed ones, run the following script:
+
+```bash
+python algorithms/generate_pca_basis.py
+```
+
+You need to specify the path to a folder with face images. We used the [FFHQ thumbnails dataset](https://github.com/NVlabs/ffhq-dataset) (`thumbnails128x128` version).
+
+The script will save:
+- A mean face vector `mtcnn_crops_ffhq_average_vector_square.pt`
+- A PCA projection matrix `eigenvectors_denormalized_Square_ffhq.pt` (eigenfaces) 
+
+Make sure to copy the generated files to the `models/` folder so that reconstruction scripts can find them.

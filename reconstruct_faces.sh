@@ -2,15 +2,15 @@
 
 set -e
 
-NUM_THREADS=4  # сколько потоков на каждый сетап (и сколько GPU)
+NUM_THREADS=4  # How many GPUs do you have?
 PY_SCRIPT=algorithms/reconstruct_faces.py
 
 declare -a TASKS=(
-  # "lfw retinaface arcface"
+  "lfw retinaface arcface"
   "lfw mtcnn facenet"
-  # "agedb_30 retinaface arcface"
+  "agedb_30 retinaface arcface"
   "agedb_30 mtcnn facenet"
-  # "cfp_fp retinaface arcface"
+  "cfp_fp retinaface arcface"
   "cfp_fp mtcnn facenet"
 )
 

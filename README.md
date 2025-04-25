@@ -23,3 +23,36 @@
   
   - [`eigenvectors_denormalized_Square_ffhq.pt`](https://drive.google.com/file/d/1h7F0_iZl7R9Uh5MnKDqvfE3oF8Loh5Rg/view?usp=sharing)
   - [`mtcnn_crops_ffhq_average_vector_square.pt`](https://drive.google.com/file/d/1uv3ZxsVWeCOObjYh86to_CqOVbiwjlef/view?usp=sharing)
+ 
+
+#### 🚀 Running the Full Pipeline
+
+1. **Step 1: Prepare datasets and evaluate on original images**
+   ```bash
+   bash scripts/download_preprocess_eval_on_original_sets.sh
+   ```
+   - Unpacks datasets
+   - Aligns all faces (MTCNN / RetinaFace)
+   - Runs baselines with ArcFace and FaceNet on original (real) images
+
+2. **Step 2: Reconstruct positive 1st faces in positive pairs with our method**
+   ```bash
+   bash scripts/reconstruct_faces.sh
+   ```
+   - Runs our zero-order optimization algorithm
+   - Restores the first face in all positive verification pairs
+   - Supports ArcFace-based and FaceNet-based reconstructions
+
+3. **Step 3: Evaluate reconstructed faces**
+   ```bash
+   bash scripts/run_eval_on_reconstructed.sh
+   ```
+   - Aligns reconstructed images (MTCNN / RetinaFace)
+   - Runs ArcFace and FaceNet verification on restored faces
+
+---
+
+📝 **Results** are saved into:
+```
+runs/results.txt
+```

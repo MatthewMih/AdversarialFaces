@@ -39,6 +39,7 @@
    ```bash
    bash scripts/reconstruct_faces.sh
    ```
+   - It takes ~30 hours on 4×A100 GPUs to run.
    - Runs our zero-order optimization algorithm
    - Restores the first face in all positive verification pairs
    - Supports ArcFace-based and FaceNet-based reconstructions
